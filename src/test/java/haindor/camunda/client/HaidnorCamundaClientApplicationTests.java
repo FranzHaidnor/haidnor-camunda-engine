@@ -6,7 +6,9 @@ import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.TaskService;
+import org.camunda.bpm.engine.runtime.Incident;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
+import org.camunda.bpm.engine.task.Task;
 import org.camunda.bpm.model.bpmn.BpmnModelInstance;
 import org.camunda.bpm.model.bpmn.instance.UserTask;
 import org.junit.jupiter.api.Test;
@@ -14,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Collection;
+import java.util.List;
 
 @SpringBootTest(classes = {HaidnorCamundaEngineApplication.class})
 class HaidnorCamundaClientApplicationTests {
@@ -29,6 +32,24 @@ class HaidnorCamundaClientApplicationTests {
 
     @Autowired
     private RepositoryService repositoryService;
+
+    @Test
+    public void test_() throws Exception {
+        //        ProcessInstance processUserTask = runtimeService.startProcessInstanceByKey("Process_001");
+
+        Incident incident = runtimeService.createIncidentQuery()
+                .processDefinitionKeyIn("Process_001")
+                .processDefinitionId("Process_001:1:967c988a-4e42-11ee-b62e-78af0843873a")
+                .processInstanceId("96782bb8-4e42-11ee-b62e-78af0843873a")
+                .singleResult();
+
+
+        List<Task> list = taskService.createTaskQuery()
+                .caseDefinitionKey("Process_001")
+                .caseInstanceId("Process_001:1:967c988a-4e42-11ee-b62e-78af0843873a")
+                .list();
+        System.out.println(list);
+    }
 
     // 查询所有的用户任务节点
     @Test

@@ -2,16 +2,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-    <parent>
-        <artifactId>haidnor-framework</artifactId>
-        <groupId>haidnor</groupId>
-        <version>1.0</version>
-    </parent>
-
-    <modelVersion>4.0.0</modelVersion>
     <artifactId>haidnor-camunda-engine</artifactId>
+    <groupId>haidnor</groupId>
+    <version>1.0</version>
+
     <name>haidnor-camunda-server</name>
     <description>haidnor-camunda-server</description>
+
+    <modelVersion>4.0.0</modelVersion>
+
     <properties>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -45,9 +44,11 @@
             <groupId>org.camunda.bpm</groupId>
             <artifactId>camunda-engine-plugin-spin</artifactId>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.camunda.spin/camunda-spin-dataformat-all -->
         <dependency>
             <groupId>org.camunda.spin</groupId>
             <artifactId>camunda-spin-dataformat-all</artifactId>
+            <version>1.22.0</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
         <dependency>
