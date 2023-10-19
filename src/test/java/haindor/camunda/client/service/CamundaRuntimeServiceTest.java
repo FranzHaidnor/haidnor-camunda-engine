@@ -2,8 +2,10 @@ package haindor.camunda.client.service;
 
 import haidnor.camunda.engine.HaidnorCamundaEngineApplication;
 import haidnor.camunda.engine.model.dto.ProcessInstanceDTO;
+import haidnor.camunda.engine.model.dto.TaskDTO;
 import haidnor.camunda.engine.model.param.StartProcessInstanceByIdParam;
 import haidnor.camunda.engine.service.CamundaRuntimeService;
+import haidnor.camunda.engine.service.CamundaTaskService;
 import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.task.Task;
@@ -21,10 +23,18 @@ public class CamundaRuntimeServiceTest {
     private CamundaRuntimeService runtimeService;
 
     @Autowired
+    private CamundaTaskService camundaTaskService;
+
+    @Autowired
     private TaskService taskService;
 
     @Autowired
     private HistoryService historyService;
+
+    @Test
+    public void test_getActiveTask() throws Exception {
+        TaskDTO activeTask = camundaTaskService.getActiveTask("764e8941-6735-11ee-93b2-00155d6330fb");
+    }
 
     @Test
     public void test_startProcessInstanceById() throws Exception {

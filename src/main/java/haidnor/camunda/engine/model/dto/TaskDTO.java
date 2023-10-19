@@ -4,6 +4,9 @@ public class TaskDTO {
     private String processDefinitionId;
     private String processInstanceId;
     private String taskDefinitionKey;
+    /**
+     * DB id of the task
+     */
     private String id;
 
     public String getProcessDefinitionId() {

@@ -10,7 +10,9 @@ import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CamundaRuntimeService {
@@ -32,7 +34,7 @@ public class CamundaRuntimeService {
     private void backProcessToPreviousNode(String processInstanceId) {
         // 查询活跃的流程实例
         ActivityInstance activityInstance = runtimeService.getActivityInstance(processInstanceId);
-        // 如果流程实例结束将会查询不到, 返回
+        // 如果流程实例结束将会查询不到, 返回 null
         if (activityInstance == null) {
             return;
         }
@@ -47,11 +49,15 @@ public class CamundaRuntimeService {
         List<HistoricActivityInstance> historicActivityInstanceList = historyService.createHistoricActivityInstanceQuery()
                 .processInstanceId(processInstanceId)
                 .activityType("userTask")
-                .orderByHistoricActivityInstanceStartTime()
-                .asc()
                 .list();
+
+        historicActivityInstanceList = historicActivityInstanceList.stream()
+                .filter(instance -> instance.getEndTime() != null)
+                .sorted(Comparator.comparing(HistoricActivityInstance::getStartTime))
+                .collect(Collectors.toList());
+
         // 如果流程没有历史记录,则直接返回
-        if (historicActivityInstanceList == null || historicActivityInstanceList.isEmpty()) {
+        if (historicActivityInstanceList.isEmpty()) {
             return;
         }
         HistoricActivityInstance lastTask = null;
@@ -88,7 +94,7 @@ public class CamundaRuntimeService {
     private void backProcessToFirstNode(String processInstanceId) {
         // 查询活跃的流程实例
         ActivityInstance activityInstance = runtimeService.getActivityInstance(processInstanceId);
-        // 如果流程实例结束将会查询不到, 返回
+        // 如果流程实例结束将会查询不到, 返回 null
         if (activityInstance == null) {
             return;
         }
@@ -103,17 +109,18 @@ public class CamundaRuntimeService {
         List<HistoricActivityInstance> historicActivityInstanceList = historyService.createHistoricActivityInstanceQuery()
                 .processInstanceId(processInstanceId)
                 .activityType("userTask")
-                .orderByHistoricActivityInstanceStartTime()
-                .asc()
                 .list();
+
+        HistoricActivityInstance firstTask  = historicActivityInstanceList.stream()
+                .filter(instance -> instance.getEndTime() != null)
+                .min(Comparator.comparing(HistoricActivityInstance::getStartTime))
+                .orElse(null);
+
         // 如果流程没有历史记录,则直接返回
-        if (historicActivityInstanceList == null || historicActivityInstanceList.isEmpty()) {
+        if (firstTask == null || firstTask.getActivityId().equals(activityTask.getActivityId())) {
             return;
         }
-        HistoricActivityInstance firstTask = historicActivityInstanceList.get(0);
-        if (firstTask.getActivityId().equals(activityTask.getActivityId())) {
-            return;
-        }
+
         runtimeService.createProcessInstanceModification(processInstanceId)
                 // 取消当前活跃的流程节点
                 .cancelActivityInstance(activityTask.getId())
